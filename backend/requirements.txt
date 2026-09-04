@@ -1,0 +1,12 @@
+# Solvent backend — runtime dependencies (only what's actually imported).
+# Cleaned after HedgeIQ removal: scipy/torch/neuralop are gone (were only
+# used by the retired FX pricing / FNO training modules).
+
+fastapi>=0.109
+uvicorn[standard]>=0.27
+pydantic>=2.5
+numpy>=1.26
+
+# Dev / test only (uncomment to run the test suite):
+# pytest>=8.0
+# httpx>=0.27

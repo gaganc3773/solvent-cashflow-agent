@@ -1,0 +1,79 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { -webkit-font-smoothing: antialiased; }
+  body { font-family: 'IBM Plex Sans', system-ui, sans-serif; }
+  .tabular { font-variant-numeric: tabular-nums; }
+  .mono { font-family: 'IBM Plex Mono', monospace; font-variant-numeric: tabular-nums; }
+  .serif { font-family: 'Instrument Serif', serif; font-weight: 400; }
+}
+
+@layer components {
+  .kpi-label {
+    @apply text-[11px] uppercase tracking-[0.1em] text-ink-muted font-medium;
+  }
+  .kpi-value {
+    @apply serif text-4xl leading-none text-ink tabular;
+  }
+  .card {
+    @apply bg-panel border border-line rounded-lg;
+  }
+  .risk-pill {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-0.5 text-[10px] font-semibold tracking-[0.08em]
+           uppercase bg-brass-tint text-brass border border-brass rounded-full;
+  }
+  .risk-pill::before {
+    content: '';
+    @apply w-1.5 h-1.5 bg-brass rounded-full;
+  }
+  /* One visible focus treatment for every interactive element. Keyboard
+     users get a brass ring; mouse users see nothing extra. */
+  .focus-ring {
+    @apply outline-none focus-visible:ring-2 focus-visible:ring-brass
+           focus-visible:ring-offset-2 focus-visible:ring-offset-ground;
+  }
+}
+
+@layer base {
+  /* Anything focusable that hasn't opted into .focus-ring still gets one. */
+  :focus-visible {
+    outline: 2px solid #e4a63c;
+    outline-offset: 2px;
+  }
+  @keyframes toast-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* Custom slider */
+input[type="range"].big-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  background: #262b33;
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+}
+input[type="range"].big-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  background: #e4a63c;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 3px solid #161a1f;
+  box-shadow: 0 0 0 1px #e4a63c, 0 4px 12px rgba(0,0,0,0.35);
+  transition: transform 0.1s;
+}
+input[type="range"].big-slider::-webkit-slider-thumb:hover { transform: scale(1.1); }
