@@ -194,4 +194,4 @@ Day 6 → video + submit
 
 ---
 
-_Live plan — updates as we go. See [`CONTEXT.md`](./CONTEXT.md) for the design authority._
+_Live plan — updates as we go._

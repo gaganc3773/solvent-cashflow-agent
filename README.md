@@ -271,7 +271,6 @@ Open `http://localhost:5173`. Cash Position tab is the default landing.
 
 ## Deeper reading
 
-- [`CONTEXT.md`](./CONTEXT.md) — full pivot history from HedgeIQ, evidence tables, design decisions, positioning
 - [`PLAN.md`](./PLAN.md) — day-by-day build plan
 - [`Solvent_whitepaper.pdf`](./Solvent_whitepaper.pdf) — 24-page technical + product writeup
 
@@ -279,7 +278,6 @@ Open `http://localhost:5173`. Cash Position tab is the default landing.
 
 ```
 SOLVENT/
-├── CONTEXT.md                # single source of truth for decisions
 ├── PLAN.md                   # day-by-day build plan
 ├── README.md                 # this file
 ├── Solvent_whitepaper.pdf    # comprehensive technical + product document
