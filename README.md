@@ -190,25 +190,46 @@ Code: [`backend/core/cashflow/surrogate.py`](backend/core/cashflow/surrogate.py)
 
 ---
 
-## The autonomous agent loop
+## The autonomous agent loop — backend only, deliberately
 
-The optimizer says "instant-settle ₹15,000." Solvent doesn't stop there. Wrapped around the optimizer is the actual agent:
+The optimizer says "instant-settle ₹15,000." Solvent doesn't stop there. Wrapped around the optimizer is the actual agent — 300 lines of Python in [`backend/core/agent/runtime.py`](backend/core/agent/runtime.py):
 
 ```
 observe   →   decide   →   gate   →   act   →   report
 ```
 
 - **Observe** — pull the current bank + pipeline balance from the gateway adapter
-- **Decide** — run the pipeline above, get the recommended action
+- **Decide** — run the same VI optimizer the interactive UI uses, get the recommended action
 - **Gate** — check against merchant policy: is auto-execute allowed? within daily IS cap? outside quiet hours? cash floor honored?
 - **Act** — either execute the action via the gateway API, or surface it as an advisory
-- **Report** — write to an append-only audit trail (state observed, decision made, policy check outcome, execution result)
+- **Report** — append the whole tick (observed state → decision → gate outcome → execution result → post-action state) to an audit log
 
 Four modes: `off` (no ticks), `advisory` (recommendations only, never executes), `semi_auto` (executes only within policy caps), `full_auto` (executes anything policy allows, no ceiling per tick).
 
 **Gateway-agnostic**: everything above talks to a `GatewayAdapter` Protocol with five methods (`list_payments`, `list_settlements`, `get_bank_balance`, `execute_instant_settle`, `request_credit_draw`). RazorpayAdapter is production-ready. StripeAdapter is a skeleton with the exact API mapping commented in. Cashfree, Adyen, PayPal — each is a single new adapter file.
 
-Code: [`backend/core/agent/runtime.py`](backend/core/agent/runtime.py), [`backend/core/gateway/adapter.py`](backend/core/gateway/adapter.py)
+**No frontend for the agent — this is deliberate.** The pitch surface is three tabs. The agent is a headless runtime you drive from the backend, exercised via HTTP. This keeps the demo focused ("here's the decision layer humans use") and the agent honest ("here's the autonomous version, no UI dressing to hide what it does").
+
+**Endpoints live at `/agent/*`** — drive it with `curl`:
+
+```bash
+# Configure the policy
+curl -X POST http://localhost:8000/agent/policy \
+  -H "Content-Type: application/json" \
+  -d '{"mode":"semi_auto","min_cash_floor_paise":5000000,"max_auto_is_per_day_paise":10000000,"allow_credit_draw":false,"max_auto_credit_paise":5000000,"quiet_hours_start":0,"quiet_hours_end":6}' \
+  -G --data-urlencode "gateway=razorpay" --data-urlencode "merchant=nova_streetwear"
+
+# Run one agent tick — observe → decide → gate → act → report
+curl -X POST "http://localhost:8000/agent/tick?gateway=razorpay&merchant=nova_streetwear"
+
+# Simulate 7 days of ticks in one call
+curl -X POST "http://localhost:8000/agent/simulate?gateway=razorpay&merchant=nova_streetwear&days=7"
+
+# Read the audit log of what the agent has done
+curl "http://localhost:8000/agent/actions?gateway=razorpay&merchant=nova_streetwear&limit=20"
+```
+
+Code: [`backend/core/agent/runtime.py`](backend/core/agent/runtime.py) (the runtime), [`backend/api/agent.py`](backend/api/agent.py) (the HTTP router), [`backend/core/gateway/adapter.py`](backend/core/gateway/adapter.py) (the gateway abstraction)
 
 ---
 

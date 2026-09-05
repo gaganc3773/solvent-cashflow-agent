@@ -86,7 +86,7 @@ Response to "this looks like an unpolished tool, not a whole package." Rebuilt S
 - **`GatewayAdapter` protocol** ([backend/core/gateway/adapter.py](backend/core/gateway/adapter.py)): five-method interface (list_payments, list_settlements, get_pipeline_balance, get_bank_balance, execute_instant_settle, request_credit_draw) + capabilities. RazorpayAdapter is production-ready; StripeAdapter is a skeleton with the exact API mapping commented for future integration
 - **`AgentRuntime`** ([backend/core/agent/runtime.py](backend/core/agent/runtime.py)): observe → decide → gate → act → report loop. Four modes: off / advisory / semi-auto / full-auto. Per-merchant policy caps (min_cash_floor, max_auto_is_per_day, allow_credit_draw, quiet_hours)
 - **Agent endpoints** ([backend/api/agent.py](backend/api/agent.py)): `/agent/status`, `/agent/policy`, `/agent/tick`, `/agent/simulate?days=N`, `/agent/actions`, `/agent/reset`
-- **Agent tab in the UI** ([frontend/src/pages/Agent.tsx](frontend/src/pages/Agent.tsx)): mode toggle, policy config sliders, "Run one tick" + "Simulate 7 days" controls, reverse-chrono activity feed with per-tick EXECUTED/ADVISED/BLOCKED/IDLE badges
+- **Agent tab in the UI** — mode toggle, policy config sliders, "Run one tick" + "Simulate 7 days" controls, reverse-chrono activity feed with per-tick EXECUTED/ADVISED/BLOCKED/IDLE badges. **Removed from the frontend in Phase 8** to keep the pitch surface at three tabs; backend runtime + endpoints stay live at `/agent/*` and can be driven with `curl` or Postman for demo
 - Track pivoted from 03 (Revenue Recovery — wrong fit) to 04 (AI Finance Controller — perfect match): "Run the books and the cash position ... close one finance-ops loop"
 
 ### Phase 5 · Solvent build (Days 1–5 complete; Day 6 = submission)
@@ -292,8 +292,8 @@ Carried forward from 8 rounds of external critique on HedgeIQ:
 - **Day-by-day plan**: [`PLAN.md`](./PLAN.md)
 - **Backend API entry**: [`backend/api/main.py`](./backend/api/main.py)
 - **Frontend entry**: [`frontend/src/App.tsx`](./frontend/src/App.tsx)
-- **HedgeIQ historical mockup** (context only): [`mockup/hedgeiq_mockup.html`](./mockup/hedgeiq_mockup.html)
-- **HedgeIQ historical plan PDF**: [`plan/plan.pdf`](./plan/plan.pdf)
+- **Agent runtime**: [`backend/core/agent/runtime.py`](./backend/core/agent/runtime.py) · endpoints [`backend/api/agent.py`](./backend/api/agent.py) · adapters [`backend/core/gateway/adapter.py`](./backend/core/gateway/adapter.py)
+- _HedgeIQ historical assets (mockup + plan.pdf) were removed with the rest of the HedgeIQ scaffold in Phase 8_
 
 ---
 
